@@ -1,0 +1,32 @@
+form input {
+        display:block;
+}
+
+.title-image {
+        width: 300px;           /* or any size */
+        height: 300px;
+        border-radius: 5%;     /* makes it a circle */
+        object-fit: cover;      /* ensures it crops nicely */
+        border: 2px solid #ccc; /* optional border */
+        display: block;
+}
+
+.thumb-image {
+        width: 100px;           /* or any size */
+        height: 100px;
+        border-radius: 5%;     /* makes it a circle */
+        object-fit: cover;      /* ensures it crops nicely */
+        border: 2px solid #ccc; /* optional border */
+        display: block;
+}
+
+.tool-entry {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 10px;
+}
+
+.tool-entry a {
+        margin: 10px;
+}
