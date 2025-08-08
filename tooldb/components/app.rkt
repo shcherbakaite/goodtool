@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require koyo
+         ;deta
          koyo/database/migrator
          racket/contract/base
          racket/contract/region
@@ -49,6 +50,13 @@
 
       ; ; TOOL VIEW PAGE 
 
+      [("tool-delete-confirmation" (integer-arg))
+        (tool-delete-confirmation tools)]
+
+      [("tool-delete-action" (integer-arg))
+        #:method "post"
+        (tool-delete-action tools)]
+
       [("tool-info" (integer-arg))
         (tool-info-page tools)]
 
@@ -59,9 +67,13 @@
         #:method "post"
         (tool-edit tools)]
 
-      [("tool-quicksearch" (string-arg))
+      [("tool-autocomplete" (string-arg))
         #:method "get"
-        (tool-quicksearch tools)]
+        (tool-autocomplete tools)]
+
+      [("tools-search" (string-arg))
+        #:method "get"
+        (tools-search-results tools)]
 
       ; ; MATERIALS PAGE
 
@@ -70,6 +82,13 @@
 
       [("material-info" (integer-arg))
         (material-info-page tools)]
+
+      [("material-image" (integer-arg))
+        (material-img tools)]
+
+      [("materials-search" (string-arg))
+        #:method "get"
+        (materials-search-results tools)]
 
       ; [("materials-list" (string-arg))
       ;   (materials-list-fragment tools)]

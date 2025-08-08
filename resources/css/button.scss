@@ -1,0 +1,42 @@
+@use './_colors.scss' as *;
+
+button {
+  color: $monokai-blue;
+  padding: 0.7em 1.7em;
+  font-size: 18px;
+  border-radius: 0.5em;
+  background: transparent;
+  cursor: pointer;
+  border: 1px solid $monokai-blue;
+  transition: all 0.3s;
+  margin: 10px;
+  // box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+}
+
+button:hover {
+  text-decoration: underline;
+  // background: $monokai-fg;
+}
+
+button:active {
+  box-shadow: 4px 4px 12px #c5c5c5, -4px -4px 12px #ffffff;
+}
+
+
+
+
+input[type="file"]::file-selector-button {
+  color: $monokai-blue;
+  padding: 0.5em 0.7em;
+  // font-size: 18px;
+  border-radius: 0.5em;
+  background: transparent;
+  cursor: pointer;
+  border: 1px solid $monokai-blue;
+  transition: all 0.3s;
+  // margin: 10px;
+}
+
+input[type="file"]::file-selector-button:hover {
+  text-decoration: underline;
+}

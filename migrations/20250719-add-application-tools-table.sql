@@ -6,8 +6,8 @@
 -- @up {
 create table application_tools(
   id serial primary key,
-  applicationid integer REFERENCES applications(id),
-  toolid integer REFERENCES tools(id)
+  applicationid integer REFERENCES applications(id) ON DELETE CASCADE,
+  toolid integer REFERENCES tools(id) ON DELETE CASCADE
 );
 -- }
 

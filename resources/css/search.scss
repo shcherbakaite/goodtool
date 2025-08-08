@@ -1,0 +1,19 @@
+@use './_colors.scss' as *;
+
+.search-field {
+	width: 100%;
+	background: $monokai-bg;
+	color:  $monokai-yellow;
+	background: url(../img/magnifying-glass-solid-full.svg) no-repeat scroll 8px 8px;
+	background-position: left center;
+	background-position-x: 5px;
+	background-size: 40px;
+	padding-left:50px;
+	height: 50px;
+	font-size: 20pt;
+}
+
+.search-field path {
+	stroke: $monokai-fg;
+}
+

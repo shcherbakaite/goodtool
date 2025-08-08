@@ -12,7 +12,7 @@
 
 (provide
  (contract-out
-  [tool-quicksearch (-> tool-manager? (-> request? string? response?))]))
+  [tool-autocomplete (-> tool-manager? (-> request? string? response?))]))
 
 ; (define ((dashboard-page tm) _req))
 ;   (page
@@ -21,7 +21,7 @@
 ;      (:h1 "Hello World!")))))
 
 
-(define ((tool-quicksearch tm) _req term)
+(define ((tool-autocomplete tm) _req term)
   ;(displayln (dict-ref json 'client_secret))
   (displayln term)
   (define json_response (make-hash))

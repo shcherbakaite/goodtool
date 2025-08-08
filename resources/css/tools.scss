@@ -1,3 +1,5 @@
+@use './_colors.scss' as *;
+
 form input {
         display:block;
 }
@@ -7,8 +9,9 @@ form input {
         height: 300px;
         border-radius: 5%;     /* makes it a circle */
         object-fit: cover;      /* ensures it crops nicely */
-        border: 2px solid #ccc; /* optional border */
+        border: 2px solid $monokai-pink; /* optional border */
         display: block;
+        margin-bottom: 25px;
 }
 
 .thumb-image {
@@ -16,7 +19,7 @@ form input {
         height: 100px;
         border-radius: 5%;     /* makes it a circle */
         object-fit: cover;      /* ensures it crops nicely */
-        border: 2px solid #ccc; /* optional border */
+        border: 2px solid $monokai-green; /* optional border */
         display: block;
 }
 
@@ -29,4 +32,34 @@ form input {
 
 .tool-entry a {
         margin: 10px;
+}
+
+
+.form-group {
+        margin: 10px;
+}
+
+.form-group label{
+        font-weight: 500;
+}
+
+
+h2 {
+        margin-bottom: 10px;
+        margin-top: 10px;
+}
+
+h1 {
+        margin-bottom: 10px;
+        margin-top: 10px;
+}
+
+.applications-list {
+        list-style: none;
+}
+
+.buttons {
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: row;
 }

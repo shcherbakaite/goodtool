@@ -9,8 +9,8 @@ create table tools(
   partno text not null unique,
   description text not null,
   manufactorer text,
-  mpn text
-  
+  mpn text,
+  image bytea
 );
 -- }
 

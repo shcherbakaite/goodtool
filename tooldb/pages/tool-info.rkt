@@ -2,8 +2,11 @@
 
 (require koyo/haml
          koyo/url
+         koyo/database
          racket/contract/base
          web-server/http
+         deta
+         db
          "../components/template.rkt"
          "../components/tool.rkt")
 
@@ -20,47 +23,56 @@
 ;      (:h1 "Hello World!")))))
 
 
-; Serve tool image
+; Serve tool image r redirect to default image
 (define ((tool-img tm) _req tid)
-  (define t (get-tool-by-id tm tid))
-  (define data (tool-image t)) 
-  (response/output
-   #:code 200
-   #:mime-type #"image/jpeg;"
-   (lambda (out) (write-bytes data out))))
+  (let ([t (get-tool-by-id tm tid)])
+    (if (and t (sql-null->false (tool-image t)))
+      (begin 
+        (response/output
+         #:code 200
+         #:mime-type #"image/jpeg;"
+         (lambda (out) (write-bytes (tool-image t) out))))
+      (redirect-to (static-uri "img/tool-default.jpg")))))
 
 
 (define ((tool-info-page tm) _req tid)
 
   (define t 
   (if (= tid -1)
-    (make-tool #:partno "PARTNO" #:description "DESCRIPTION" #:mpn "MPN" #:manufactorer "MANUFACTORER" #:image "test" )
+    (make-tool #:partno (format "~a" (random 9999999)) #:description "A NEW TOOL" #:mpn "" #:manufactorer "" )
     (get-tool-by-id tm tid)))
 
   (page
    (haml
     (.container
      (:h1 "Tool Info")
-      (:form ([:action (reverse-uri 'tool-edit tid)] [:method "POST"] [:enctype "multipart/form-data"])
+      (:form ([:action (reverse-uri 'tool-edit tid)] [:method "POST"] [:enctype "multipart/form-data"] [:id "tool-form"])
       
-      (:img [(:class "title-image") (:src (reverse-uri 'tool-img tid))] ) 
+        (:div ([:class "form-group"])
+          (:img [(:class "title-image") (:src (reverse-uri 'tool-img tid))] ) 
 
-      (:label [(:type "myfile")] "Replace image")
-      (:input [(:type "file") (:id "myfile") (:name "myfile") (:accept "image/png, image/jpeg")]) 
+          (:label [(:type "myfile")] "Replace image")
+          (:input [(:type "file") (:id "myfile") (:name "myfile") (:accept "image/png, image/jpeg")])
+
+          )
+        
+        (:div ([:class "form-group"])  
+          (:label "Part Number")
+          (:input [(:type "text") (:name "partno") (:value (tool-partno t))]))
+        
+        (:div ([:class "form-group"])
+          (:label "Description")
+          (:input [(:type "text") (:name "description") (:value (tool-description t))]))
+        
+        (:div ([:class "form-group"])
+          (:label "Manufactorer")
+          (:input [(:type "text") (:name "manufactorer") (:value (tool-manufactorer t))]))
+          
+        (:div ([:class "form-group"])
+          (:label "MPN")
+          (:input [(:type "text") (:name "MPN") (:value (tool-mpn t))]))
       
-      (:label "Part Number")
-      (:input [(:type "text") (:name "partno") (:value (tool-partno t))])
-      
-      (:label "Description")
-      (:input [(:type "text") (:name "description") (:value (tool-description t))])
-      
-      (:label "Manufactorer")
-      (:input [(:type "text") (:name "manufactorer") (:value (tool-manufactorer t))])
-      
-      (:label "MPN")
-      (:input [(:type "text") (:name "MPN") (:value (tool-mpn t))])
-      
-      (:button [(:class "")] "Save"))
+     
 
      ; ,@(for/list ([t (tools-list-all tools)])
      ;    (haml
@@ -76,15 +88,31 @@
 
         ;(format "~s ::::::  " (get-tool-applications tm tid))
           
+        ; (:ul ([:class "applications-list"]) 
+        ; ,@(for/list ([a (get-tool-applications tm tid)])
+        ;   (haml
+        ;     (:li
+        ;       (:a [(:target "_blank") (:href (reverse-uri 'application-info (application-id a)) )] (format "#~a — ~a" (application-id a) (application-description a)) )
+        ;     )
+        ;   )
+        ; )
+        ; )
 
         ,@(for/list ([a (get-tool-applications tm tid)])
           (haml
-            (:div
-              (:a [(:href (reverse-uri 'application-info (application-id a)) )] (format "#~a - ~a" (application-id a) (application-description a)) )
+            (:div [(:class "tool-entry")]
+              (:img [(:class "thumb-image") (:src (reverse-uri 'tool-img (tool-id t)))] )
+              (:a [(:target "_blank") (:href (reverse-uri 'application-info (application-id a)) )] (application->string a) )
             )
           )
         )
 
-        (:a [(:href (reverse-uri 'application-info -1 #:query (list (cons `toolid (format "~s" tid))) ))] "Add Application" )
- 
-      ))))
+
+        (:a ([:class "action-link"]  [:href (reverse-uri 'application-info -1 #:query (list (cons `toolid (format "~s" tid))) )] ) "Add Application" )
+      )
+
+      (:form ([:id "delete-tool-form"] [:action (reverse-uri 'tool-delete-confirmation tid)] [:method "GET"]))
+
+      (:div ([:class "buttons"])
+        (:button [(:class "") (:form "delete-tool-form")] "Delete") (:button [(:class "") (:form "tool-form")] "Save")) 
+    ))))

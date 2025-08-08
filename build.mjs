@@ -12,13 +12,17 @@ const ctx = await esbuild.context({
   bundle: true,
   minify: production,
   sourcemap: production,
+  loader: {
+    ".svg": "file",
+    ".ttf": "file",
+  },
   plugins: [
     sassPlugin(),
     copy({
-      assets: {
-        from: "./resources/img/*",
-        to: "./img",
-      },
+      assets: [
+        { from: "./resources/img/*", to: "./img" },
+        { from: "./resources/fonts/*", to: "./fonts" }
+      ]
     }),
   ],
 });

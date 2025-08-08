@@ -23,6 +23,9 @@
  tool-manager?
  tool-manager-db
  tools-list-all
+ tool->string
+ material->string
+ application->string
  get-tool-by-id
  get-tool-applications
  query-application-tools
@@ -33,29 +36,30 @@
  get-application-tools
  get-application-materials
  tools-search
+ materials-search 
  get-application-tool-by-id 
 )
-
 
 (define-schema material
   ([id id/f #:primary-key #:auto-increment]
    [partno string/f #:contract non-empty-string? #:wrapper string-upcase]
-   [description string/f #:contract non-empty-string? #:wrapper string-upcase]
+   [description string/f #:wrapper string-upcase]
    [manufactorer string/f #:wrapper string-upcase]
-   [mpn string/f #:wrapper string-upcase]))
+   [mpn string/f #:wrapper string-upcase]
+   [image binary/f #:nullable #:contract (or/c bytes? #f)] ))
 
 (define-schema tool
   ([id id/f #:primary-key #:auto-increment]
    [partno string/f #:contract non-empty-string? #:wrapper string-upcase]
-   [description string/f #:contract non-empty-string? #:wrapper string-upcase]
+   [description string/f #:wrapper string-upcase]
    [manufactorer string/f #:wrapper string-upcase]
    [mpn string/f #:wrapper string-upcase]
-   [image binary/f #:nullable #:contract (or/c bytes? #f)]
-    ))
+   [image binary/f #:nullable #:contract (or/c bytes? #f)] ))
 
 (define-schema application
   ([id id/f #:primary-key #:auto-increment]
    [description string/f #:wrapper string-upcase]
+   [note string/f]
     )
   )
 
@@ -146,7 +150,24 @@
   (with-database-connection [conn (tool-manager-db tm)]
     (query-entities
      conn
-     (from tool #:as t))))
+     (~>
+       (from tool #:as t)
+       (order-by ([t.partno ])) ))))
+
+(define (tool->string t)
+  (if (tool? t)
+    (format "~a – ~a" (tool-partno t) (tool-description t))
+    #f))
+
+(define (material->string m)
+  (if (material? m)
+    (format "~a – ~a" (material-partno m) (material-description m))
+    #f))
+
+(define (application->string a)
+  (if (application? a)
+    (format "#~a – ~a" (application-id a) (application-description a))
+    #f))
 
 (define (materials-list-all tm)
   (with-database-connection [conn (tool-manager-db tm)]
@@ -184,6 +205,7 @@
    (~> 
      (from material #:as m)
      (join application_material #:as am #:on (= m.id am.materialid))
+     (select m.id m.description m.mpn m.partno (as am.id materialentryid) am.applicationid )
      (where (= am.applicationid ,id))
      (order-by ([am.id]))  
      ))))
@@ -194,7 +216,6 @@
   like-str
   )
 
-
 (define (tools-search tm query-str)
   (define keywords (string-split query-str))
   ;(displayln (format "~s" keywords))
@@ -203,8 +224,19 @@
        conn
        (~> 
         (from tool #:as t)
-        (where (and (ilike (string-concat t.partno " - " t.description) ,(build-like-format-string query-str))))))))
+        (where (and (ilike (string-concat t.partno " " t.mpn " " t.manufactorer " " t.description) ,(build-like-format-string query-str))))))))
 
+
+
+(define (materials-search tm query-str)
+  (define keywords (string-split query-str))
+  ;(displayln (format "~s" keywords))
+  (with-database-connection [conn (tool-manager-db tm)]
+    (query-entities
+       conn
+       (~> 
+        (from material #:as m)
+        (where (and (ilike (string-concat m.partno " " m.mpn " " m.manufactorer " " m.description) ,(build-like-format-string query-str))))))))
 
   ; (define r (query
   ;         conn "SELECT t.id, t.partno, t.description, t.manufactorer, t.mpn FROM tools AS t WHERE t.description LIKE '%SPA%' " ))

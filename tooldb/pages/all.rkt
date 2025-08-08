@@ -16,5 +16,8 @@
  "tool-edit.rkt"
  "material-edit.rkt"
  "application-info.rkt"
- "tool-quicksearch.rkt"
- "application-edit.rkt")
+ "tool-autocomplete.rkt"
+ "application-edit.rkt"
+ "tool-search.rkt"
+ "tool-delete.rkt"
+ "material-search.rkt")

@@ -3,24 +3,17 @@
 (require koyo/haml
          koyo/url
          deta
-         racket/dict
          koyo/database
          racket/contract/base
          web-server/http
          web-server/http/bindings
+         "../images.rkt"
          "../components/template.rkt"
          "../components/tool.rkt")
 
 (provide
  (contract-out
   [material-edit (-> tool-manager? (-> request? integer? response?))]))
-
-; (define ((dashboard-page tm) _req))
-;   (page
-;    (haml
-;     (.container
-;      (:h1 "Hello World!")))))
-
 
 (define ((material-edit tm) _req mid)
   (define bindings (make-hash (request-bindings _req)))
@@ -34,6 +27,14 @@
     (update-one! conn (set-material-description m (hash-ref bindings `description)))
     (update-one! conn (set-material-manufactorer m (hash-ref bindings `manufactorer)))
     (update-one! conn (set-material-mpn m (hash-ref bindings `mpn)))
-    )
+
+    ; Update tool image
+    (let* [(file-binding (bindings-assq #"myfile" (request-bindings/raw _req)))
+           (file-bytes (binding:file-content file-binding))]
+      (when (> (bytes-length file-bytes) 0)
+        (update-one! conn (set-material-image m (image-square file-bytes))))
+      )
+
+  )
   
-    (redirect-to (reverse-uri 'material-info-page mid)))
+  (redirect-to (reverse-uri 'material-info-page mid)))

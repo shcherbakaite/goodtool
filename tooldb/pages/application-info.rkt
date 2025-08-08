@@ -38,13 +38,15 @@
 
 
 (define ((application-info tm) _req aid)
+  (define bindings (make-hash (request-bindings _req)))
+
   (define a 
     (if (= aid -1)
-      (make-application #:description "")
+      (make-application #:description "ddd" #:note "ddd")
       (get-application-by-id tm aid)))
 
   ;(printf "~a\n" (rows-result->alist (query-application-tools tm aid)))
-
+  (printf "~a\n" a)
   (page
    (haml
     (.container
@@ -53,40 +55,77 @@
 
       (:form ([:action (reverse-uri 'application-edit aid)] [:method "POST"])
         
+        (:div ([:class "form-group"])  
+          (:label "Description")
+          (:input [(:type "text") (:name "description") (:value (application-description a))]))
 
-        (:label "Description")
-        (:input [(:type "text") (:name "description") (:value (application-description a))])
+        (:div ([:class "form-group"])  
+          (:label "Note")
+          (:textarea [(:name "note") ] (application-note a)))
 
         (:h2 "Tools")
         ,@(for/list ([t (rows-result->alist (query-application-tools tm aid))] [i (in-naturals 1)])
           (printf "ENTRY: ~s\n" t)
-
+          (displayln "TEST")
           (define hidden-field-name (format "tool-hidden-id[~s]" (assoc-ref "toolentryid" t)))
           (define search-field-name (format "tool-id[~s]"  (assoc-ref "toolentryid" t)))
           (define image-name (format "img-id[~s]"  (assoc-ref "toolentryid" t)))
+          (define remove-checkbox-name (format "remove-id[~s]"  (assoc-ref "toolentryid" t)))
           (define original-value (string-append (assoc-ref "partno" t) " - " (assoc-ref "description" t)))
 
           (haml
             (:div [(:class "autocomplete-container")]
+              ; (:div (format "~s" i))
               (:img [(:id image-name) (:class "thumb-image") (:src (reverse-uri 'tool-img (assoc-ref "id" t)))]) 
               (:input [(:id hidden-field-name ) (:type "hidden") (:name hidden-field-name) (:value (number->string (assoc-ref "id" t))) ])
-              (:input [(:type "text") (:autocomplete "off") (:class "autocomplete") (:name search-field-name) (:autocomplete-hidden-field-id hidden-field-name) (:autocomplete-url "/tool-quicksearch") (:value original-value ) (:previous-value original-value ) ])
-              (:a [(:href (reverse-uri 'tool-info-page (assoc-ref "id" t)))] "View")
+              
+              (:div ([:class "autocomplete-dropdown-container"])
+                (:input [(:type "text") 
+                  (:autocomplete "off") 
+                  (:class "autocomplete") 
+                  (:name search-field-name) 
+                  (:autocomplete-hidden-field-id hidden-field-name) 
+                  (:autocomplete-url "/tool-autocomplete") 
+                  (:value original-value ) 
+                  (:previous-value original-value ) ])
+              )
+
+              (:a [(:target "_blank") (:href (reverse-uri 'tool-info-page (assoc-ref "id" t)))] "View")
+
+              ;(:div [(:class "checkbox-group")]
+                (:input [(:type "checkbox")  (:id remove-checkbox-name) (:name remove-checkbox-name)] )
+                (:label [(:for remove-checkbox-name)] "Remove");)
             )
           )
           )
-        (let 
+        (let* 
           [(hidden-field-name (format "tool-hidden-id[~s]" -1))
-          (search-field-name (format "tool-id[~s]" -1))]
+          (search-field-name (format "tool-id[~s]" -1))
+          ; toolid GET parameter indicates that initial tool needs to be filled out
+          (for-tool-id (string->number (hash-ref bindings `toolid "0")))
+          (t (get-tool-by-id tm for-tool-id))
+          (for-tool-desc (or (tool->string t) ""))]
             (haml
               (:div [(:class "autocomplete-container")]
-                (:img [(:id "new-tool-img") (:class "thumb-image") (:src (reverse-uri 'tool-img 1))] ) 
-                (:input [(:id hidden-field-name ) (:type "hidden") (:name hidden-field-name) (:value (number->string 0 ) ) ])
-                (:input [(:type "text") (:placeholder "New tool entry") (:autocomplete "off") (:class "autocomplete") (:name search-field-name) (:autocomplete-hidden-field-id hidden-field-name) (:autocomplete-url "/tool-quicksearch") (:value "" )])
+                (:img [(:id "new-tool-img") (:class "thumb-image") (:src (static-uri "img/tool-default.jpg"))] ) 
+                (:input [(:id hidden-field-name ) (:type "hidden") (:name hidden-field-name) (:value (number->string for-tool-id) ) ])
+                (:div ([:class "autocomplete-dropdown-container"])
+                  (:input [
+                    (:type "text") 
+                    (:placeholder "New tool entry") 
+                    (:autocomplete "off") 
+                    (:class "autocomplete") 
+                    (:name search-field-name) 
+                    (:autocomplete-hidden-field-id hidden-field-name) 
+                    (:autocomplete-url "/tool-autocomplete") 
+                    (:value for-tool-desc )
+                    (:previous-value for-tool-desc )])
+                )
               )
             ))
 
-        (:button [(:class "")] "Save")
+        (:div ([:class "buttons"])
+          (:button [(:class "")] "Save"))
 
         )
 

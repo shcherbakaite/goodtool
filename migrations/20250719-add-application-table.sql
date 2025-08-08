@@ -6,7 +6,8 @@
 -- @up {
 create table applications(
   id serial primary key,
-  description text
+  description text,
+  note text
 );
 -- }
 

@@ -1,0 +1,50 @@
+@use './_colors.scss' as *;
+
+a {
+  color: $monokai-green;
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+  padding: 5px;
+  
+
+  &:focus {
+    outline: none;
+    border-color: transparent;
+    // box-shadow: 0 0 0 3px rgba(102, 217, 239, 0.3); // subtle glow
+    // padding: 5px;
+    // border-radius: 5px;
+  }
+
+  &:hover,
+  &:focus {
+    color: $monokai-green;
+    text-decoration: underline;
+  }
+
+  &:visited {
+    color: $monokai-green;
+  }
+
+  &:active {
+    color: $monokai-green;
+  }
+
+}
+
+a.action-link {
+    font-weight: 500;
+    color: $monokai-blue;
+
+  &:hover,
+  &:focus {
+    color: $monokai-blue;
+  }
+
+  &:visited {
+    color: $monokai-blue;
+  }
+
+  &:active {
+    color: $monokai-blue;
+  }
+}

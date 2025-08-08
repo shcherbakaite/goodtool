@@ -43,7 +43,8 @@
    (.nav
     ([:up-nav ""])
     (container
-     (haml (.nav__items ,@items))))))
+      (haml 
+        (.nav__items (:span ([:title "Right damn tool for the right damn job!"] [:class "nav__title"]) "GOODTOOL") ,@items)) ) )))
 
 (define (nav-item uri label)
   (haml
@@ -77,20 +78,17 @@
 
          (:script ([:src (static-uri "app.js")] [:defer "defer"]))
 
-
-
-
          )
-
-
-
 
         (:body
          (when show-nav?
            (if (current-user)
-               (nav (nav-item (reverse-uri 'dashboard-page) (translate 'nav-dashboard))
+               (nav (nav-item (reverse-uri 'tools) "Tools")
                     (nav-item (reverse-uri 'logout-page) (translate 'nav-log-out)))
-               (nav (nav-item (reverse-uri 'dashboard-page) (translate 'nav-dashboard))
+               (nav (nav-item (reverse-uri 'tools-page) "Tools")
+                    (nav-item (reverse-uri 'tool-info-page -1  ) "New Tool")
+                    (nav-item (reverse-uri 'materials-page ) "Materials")
+                    (nav-item (reverse-uri 'tool-info-page -1  ) "New Material")
                     (nav-item (reverse-uri 'login-page) (translate 'nav-log-in))
                     (nav-item (reverse-uri 'signup-page) (translate 'nav-sign-up)))))
 

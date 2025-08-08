@@ -24,19 +24,20 @@
     (.container
      (:h1 "Tools")
      
-     ,@(for/list ([t (tools-list-all tools)])
-        (haml
-          (:div [(:class "tool-entry")]
-            (:img [(:class "thumb-image") (:src (reverse-uri 'tool-img (tool-id t)))] )
-            (:a [(:href (reverse-uri 'tool-info-page (tool-id t)))] (tool-partno t) " - " (tool-description t) )
+     (:input ([:class "search-field"] [:name "search-field"] [:search-url "/tools-search"] [:search-results-id "tool-search-results-id"] ))
+
+     (:div ([:id "tool-search-results-id"])
+
+       ,@(for/list ([t (tools-list-all tools)])
+          (haml
+            (:div [(:class "tool-entry")]
+              (:img [(:class "thumb-image") (:src (reverse-uri 'tool-img (tool-id t)))] )
+              (:a [(:href (reverse-uri 'tool-info-page (tool-id t)))] (tool->string t) )
+            )
+
           )
-
+        ; (format "~s ::::::  " (tool-partno t))
+   
         )
-      ; (format "~s ::::::  " (tool-partno t))
- 
-      )
 
-
-      (:a [(:href (reverse-uri 'tool-info-page -1  ))] "Add Tool" )
-
-     ))))
+     )))))
