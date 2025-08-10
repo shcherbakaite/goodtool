@@ -107,17 +107,20 @@ body {
 //   }
 // }
 
-// .flash {
-//   list-style-type: none;
-//   margin: 12px 0;
+.flash {
+  list-style-type: none;
+  margin: 12px 0;
 
-//   &__item {
-//     background: $cool-grey-3;
-//     border-radius: 4px;
-//     color: $white;
-//     padding: 12px;
-//   }
-// }
+  &__item {
+    background: $monokai-bg;
+    border-radius: 4px;
+    color: $monokai-comments;
+    padding: 1px;
+    font-weight: 300;
+    text-align: left;
+    //border: 1px solid $monokai-green;
+  }
+}
 
 .form {
   &--login,

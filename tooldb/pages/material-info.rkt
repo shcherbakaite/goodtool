@@ -4,7 +4,9 @@
          koyo/url
          racket/contract/base
          web-server/http
+         racket/list
          db
+         (prefix-in list: racket/list)
          "../components/template.rkt"
          "../components/tool.rkt")
 
@@ -13,13 +15,6 @@
   [material-img (-> tool-manager? (-> request? integer? response?))])
  (contract-out
   [material-info-page (-> tool-manager? (-> request? integer? response?))]) )
-
-; (define ((dashboard-page tm) _req))
-;   (page
-;    (haml
-;     (.container
-;      (:h1 "Hello World!")))))
-
 
 ; Serve tool image r redirect to default image
 (define ((material-img tm) _req mid)
@@ -33,19 +28,23 @@
       (redirect-to (static-uri "img/material-default.jpg")))))
 
 (define ((material-info-page tm) _req mid)
-  (define m (get-material-by-id tm mid) )
+  (define m 
+  (if (= mid -1)
+    (make-material #:partno (format "~a" (random 9999999)) #:description "A NEW MATERIAL" #:mpn "" #:manufactorer "" )
+    (get-material-by-id tm mid)))
+
+
   (page
    (haml
     (.container
      (:h1 "Material Info")
-      (:form ([:action (reverse-uri 'material-edit mid)] [:enctype "multipart/form-data"] [:method "POST"])
+      (:form ([:id "material-form"] [:action (reverse-uri 'material-edit mid)] [:enctype "multipart/form-data"] [:method "POST"])
 
         (:div ([:class "form-group"])
           (:img [(:class "title-image") (:src (reverse-uri 'material-img mid))] ) 
 
           (:label [(:type "myfile")] "Replace image")
           (:input [(:type "file") (:id "myfile") (:name "myfile") (:accept "image/png, image/jpeg")])
-
           )
 
         (:div ([:class "form-group"])
@@ -63,31 +62,29 @@
         (:div ([:class "form-group"])
           (:label "MPN")
           (:input [(:type "text") (:name "MPN") (:value (material-mpn m))]))
-
-        (:div ([:class "buttons"])
-          (:button [(:class "")] "Save"))
         )
-     ; ,@(for/list ([t (tools-list-all tools)])
-     ;    (haml
-     ;      (:div
-     ;        (:a [(:href (reverse-uri 'tool-info (tool-id t)))] (tool-partno t) " - " (tool-description t) )
-     ;      )
-
-     ;    )
-      ; (format "~s ::::::  " (tool-partno t))
 
         (:h2 "Applications")
 
+        (haml
+         (let ([applications (get-material-applications tm mid)])
+           (if (list:empty? applications)
+               (haml (:div "No applications found"))
+               (haml
+                (:div
+                 ,@(for/list ([a applications])
+                  (haml
+                    (:div [(:class "tool-entry")]
+                      (:img [(:class "thumb-image") (:src (reverse-uri 'application-img-first-tool (application-id a)))] )
+                      (:a [(:target "_blank") (:href (reverse-uri 'application-info (application-id a)) )] (application->string a) )
+                    )
+                  )
+                ))))))
 
-        ; ;(format "~s ::::::  " (get-tool-applications tm tid))
-          
+        (:a ([:class "action-link"]  [:target "_blank"] [:href (reverse-uri 'application-info -1 #:query (list (cons `materialid (format "~s" mid))) )] ) "Add Application" )
 
-        ,@(for/list ([a (get-material-applications tm mid)])
-          (haml
-            (:div
-              (:a [(:href (reverse-uri 'application-info (application-id a)) )] (application-description a) )
-            )
-          )
-        )
- 
+        (:form ([:id "delete-material-form"] [:action (reverse-uri 'material-delete-confirmation mid)] [:method "GET"]))
+
+        (:div ([:class "buttons"])
+          (:button [(:class "") (:form "delete-material-form")] "Delete") (:button [(:class "") (:form "material-form")] "Save"))
       ))))

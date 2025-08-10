@@ -90,6 +90,13 @@
         #:method "get"
         (materials-search-results tools)]
 
+      [("material-delete-confirmation" (integer-arg))
+        (material-delete-confirmation tools)]
+
+      [("material-delete-action" (integer-arg))
+        #:method "post"
+        (material-delete-action tools)]
+
       ; [("materials-list" (string-arg))
       ;   (materials-list-fragment tools)]
 
@@ -101,6 +108,10 @@
       [("material-edit" (integer-arg))
         #:method "post"
         (material-edit tools)]
+
+      [("material-autocomplete" (string-arg))
+        #:method "get"
+        (material-autocomplete tools)]
 
       ; APPLICATIONS PAGE
 
@@ -115,9 +126,22 @@
       [("application-info" (integer-arg))
         (application-info tools)]
 
+      [("application-img-first-material" (integer-arg))
+        (application-img-first-material tools)]
+
+      [("application-img-first-tool" (integer-arg))
+        (application-img-first-tool tools)]
+
       [("application-edit" (integer-arg))
         #:method "post"
         (application-edit tools)]
+
+      [("application-delete-confirmation" (integer-arg))
+        (application-delete-confirmation tools)]
+
+      [("application-delete-action" (integer-arg))
+        #:method "post"
+        (application-delete-action tools)]
 
       [("dashboard")
         (dashboard-page tools)]

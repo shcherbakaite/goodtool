@@ -12,14 +12,13 @@
 
 (provide
  (contract-out
-  [tool-autocomplete (-> tool-manager? (-> request? string? response?))]))
+  [material-autocomplete (-> tool-manager? (-> request? string? response?))]))
 
-(define ((tool-autocomplete tm) _req term)
-  (displayln term)
-  (define resp (map 
+(define ((material-autocomplete tm) _req term)
+  (define resp (map
     (lambda (a)
-      (list (tool-id a) (string-append (tool-partno a) " - " (tool-description a)))
+      (list (material-id a) (string-append (material-partno a) " - " (material-description a)))
         )
-    (tools-search tm term)))
+    (materials-search tm term)))
   (json-response (with-output-to-string 
     (lambda () (write-json resp)))))

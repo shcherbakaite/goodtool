@@ -18,12 +18,9 @@ button:hover {
   // background: $monokai-fg;
 }
 
-button:active {
-  box-shadow: 4px 4px 12px #c5c5c5, -4px -4px 12px #ffffff;
-}
-
-
-
+// button:active {
+//   box-shadow: 4px 4px 12px $monokai-blue, -4px -4px 12px $monokai-bg;
+// }
 
 input[type="file"]::file-selector-button {
   color: $monokai-blue;

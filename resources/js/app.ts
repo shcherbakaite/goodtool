@@ -4,6 +4,12 @@ import "./autocomplete.ts";
 import "./search.ts";
 
 
+// hide flash
+window.setTimeout(() => {
+        document.querySelectorAll('.flash__item').forEach(el => el.remove());
+}, 10000);
+
+
 // Add autocomplete for application tools
 autocomplete_fields = document.querySelectorAll("input.autocomplete");
 

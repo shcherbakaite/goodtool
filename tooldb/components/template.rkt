@@ -86,23 +86,25 @@
                (nav (nav-item (reverse-uri 'tools) "Tools")
                     (nav-item (reverse-uri 'logout-page) (translate 'nav-log-out)))
                (nav (nav-item (reverse-uri 'tools-page) "Tools")
-                    (nav-item (reverse-uri 'tool-info-page -1  ) "New Tool")
+                    (nav-item (reverse-uri 'tool-info-page -1 ) "New Tool")
                     (nav-item (reverse-uri 'materials-page ) "Materials")
-                    (nav-item (reverse-uri 'tool-info-page -1  ) "New Material")
-                    (nav-item (reverse-uri 'login-page) (translate 'nav-log-in))
-                    (nav-item (reverse-uri 'signup-page) (translate 'nav-sign-up)))))
+                    (nav-item (reverse-uri 'material-info-page -1 ) "New Material"))))
+                    ;(nav-item (reverse-uri 'login-page) (translate 'nav-log-in))
+                    ;(nav-item (reverse-uri 'signup-page) (translate 'nav-sign-up)))))
+
+         (.content ,@content)
 
          (unless (null? (current-flash-messages))
            (container
             (haml
              (:ul.flash
-              ,@(for/list ([flash (current-flash-messages)])
+              ,@(for/list ([flash (reverse (current-flash-messages))])
                   (haml
                    (:li
                     ([:class (format "flash__item flash__item--~a" (car flash))])
-                    (cdr flash))))))))
+                    "> " (cdr flash))))))))
 
-         (.content ,@content)))))
+         ))))
 
     (response
      200

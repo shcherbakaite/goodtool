@@ -19,6 +19,7 @@
  (schema-out tool)
  (schema-out application)
  (schema-out application_tool)
+ (schema-out application_material)
  make-tool-manager
  tool-manager?
  tool-manager-db
@@ -30,14 +31,17 @@
  get-tool-applications
  query-application-tools
  materials-list-all
+ get-application-materials
  get-material-by-id
  get-material-applications
  get-application-by-id
  get-application-tools
- get-application-materials
+ query-application-materials
+ get-material-applications 
  tools-search
  materials-search 
  get-application-tool-by-id 
+ get-application-material-by-id 
 )
 
 (define-schema material
@@ -134,14 +138,23 @@
        (where (= at.id ,id)) 
        ))))
 
+(define (get-application-material-by-id tm id)
+  (with-database-connection [conn (tool-manager-db tm)]
+    (lookup
+     conn
+     (~> 
+       (from application_material #:as am)
+       (where (= am.id ,id)) 
+       ))))
+
 (define (get-material-applications tm id)
   (with-database-connection [conn (tool-manager-db tm)]
   (query-entities
    conn
    (~> 
      (from application #:as a)
-     (join application_material #:as at #:on (= a.id at.applicationid))
-     (where (= at.materialid ,id))
+     (join application_material #:as am #:on (= a.id am.applicationid))
+     (where (= am.materialid ,id))
      ; hide duplicated, in case material is used multiple times in application
      (group-by a.id) 
      ))))
@@ -186,6 +199,17 @@
      (order-by ([at.id])) 
      ))))
 
+(define (get-application-materials tm id)
+  (with-database-connection [conn (tool-manager-db tm)]
+  (query-entities
+   conn
+   (~> 
+     (from material #:as m)
+     (join application_material #:as am #:on (= m.id am.materialid))
+     (where (= am.applicationid ,id))
+     (order-by ([am.id])) 
+     ))))
+
 (define (query-application-tools tm id)
   (with-database-connection [conn (tool-manager-db tm)]
   (query
@@ -198,17 +222,29 @@
      (order-by ([at.id])) 
      ))))
 
-(define (get-application-materials tm id)
+(define (query-application-materials tm id)
   (with-database-connection [conn (tool-manager-db tm)]
-  (query-entities
+  (query
    conn
    (~> 
      (from material #:as m)
      (join application_material #:as am #:on (= m.id am.materialid))
      (select m.id m.description m.mpn m.partno (as am.id materialentryid) am.applicationid )
      (where (= am.applicationid ,id))
-     (order-by ([am.id]))  
+     (order-by ([am.id])) 
      ))))
+
+; (define (get-application-materials tm id)
+;   (with-database-connection [conn (tool-manager-db tm)]
+;   (query-entities
+;    conn
+;    (~> 
+;      (from material #:as m)
+;      (join application_material #:as am #:on (= m.id am.materialid))
+;      (select m.id m.description m.mpn m.partno (as am.id materialentryid) am.applicationid )
+;      (where (= am.applicationid ,id))
+;      (order-by ([am.id]))  
+;      ))))
 
 (define (build-like-format-string query-str)
   (define like-str (string-append "%" (string-join (filter non-empty-string? (string-split query-str " ")) "%") "%"))

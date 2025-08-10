@@ -5,6 +5,7 @@
          deta
          racket/dict
          koyo/database
+         koyo/flash
          racket/contract/base
          racket/draw
          racket/class
@@ -35,6 +36,7 @@
       (begin 
         (let ([a (make-tool #:partno (hash-ref bindings `partno) #:description (hash-ref bindings `description) #:mpn "" #:manufactorer "" )])
           (displayln a)
+          (flash 'success "Created new TOOL")
           (insert-one! conn a)))
           (get-tool-by-id tm tid) ))
 
@@ -42,6 +44,8 @@
     (update-one! conn (set-tool-description t (hash-ref bindings `description)))
     (update-one! conn (set-tool-manufactorer t (hash-ref bindings `manufactorer)))
     (update-one! conn (set-tool-mpn t (hash-ref bindings `mpn)))
+
+    (flash 'success (format  "Updated TOOL ~s" (tool-id t)))
 
     ; Update tool image
     (let* [(file-binding (bindings-assq #"myfile" (request-bindings/raw _req)))
@@ -51,6 +55,7 @@
       ;(displayln file-name)
       
       (when (> (bytes-length file-bytes) 0)
+        (flash 'success (format  "Updated TOOL ~s image" (tool-id t)))
         (update-one! conn (set-tool-image t (image-square file-bytes))))
       )
     
