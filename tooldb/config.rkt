@@ -42,7 +42,7 @@
   (string->symbol log-level))
 
 (define-option http-host
-  #:default "127.0.0.1")
+  #:default "0.0.0.0")
 (define-option http-port
   #:default (or (getenv "PORT") "8000")
   (string->number http-port))
