@@ -6,7 +6,6 @@
   racket/match
   racket/draw)
 
-
 (provide 
   (contract-out [image-square (-> bytes? bytes?)]))
 
@@ -16,7 +15,6 @@
            [r (bitwise-and (bytes-ref bs (+ 1 offset)) #xFF)]
            [g (bitwise-and (bytes-ref bs (+ 2 offset)) #xFF)]
            [b (bitwise-and (bytes-ref bs (+ 3 offset)) #xFF)])
-      ;(printf "A: ~a, ~a, ~a \n"  (+ 1 offset)  (+ 2 offset)  (+ 3 offset) )
       (make-object color% r g b))
     ))
 
@@ -36,10 +34,7 @@
     (floor (/ (list-ref rgb-sum 0) len))   ; red
     (floor (/ (list-ref rgb-sum 1) len))   ; green
     (floor (/ (list-ref rgb-sum 2) len)))) ; blue
-
-  color-avg
-  )
-
+  color-avg)
 
 (define (image-perimeter-avg-color bm)
 
@@ -74,20 +69,8 @@
     (argb-bytes-to-colors left-edge-bytes)))
 
   (define color-avg (colors-avg perimeter-colors))
- 
-  ; (printf "AA: ~a\n" color-avg )
 
-  (printf "~a, ~a, ~a\n" (send color-avg red) (send color-avg green) (send color-avg blue))
-
-  color-avg
-  ; ; ;; Sample pixel (top-left corner)
-  ; ; (define sample-color
-  ; ;   (let* ([r (bitwise-and (bytes-ref color 1) #xFF)]
-  ; ;          [g (bitwise-and (bytes-ref color 2) #xFF)]
-  ; ;          [b (bitwise-and (bytes-ref color 3) #xFF)])
-  ; ;     (make-object color% r g b)))
-  ; 1
-  )
+  color-avg)
 
 (define (image-square image-bytes)
   ; Read bitmap from bytes
@@ -115,8 +98,6 @@
            [b (bitwise-and (bytes-ref color 3) #xFF)])
       (make-object color% r g b)))
 
-  (printf "~a, ~a, ~a\n" (send sample-color red) (send sample-color green) (send sample-color blue))
-
   (define image-border-avg-color (image-perimeter-avg-color bm))
 
   (send dc set-smoothing 'aligned)
@@ -133,7 +114,6 @@
     (let ([x (floor (- (/ side 2) (/ w 2)))]
           [y 5])
       (send dc draw-bitmap bm x y)))
-
 
   ; Return image bytes (jpeg)
   (define out (open-output-bytes))

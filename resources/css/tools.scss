@@ -23,6 +23,11 @@ form input {
         display: block;
 }
 
+.thumb-image.stub {
+        opacity: 10%;
+        border: 2px solid $monokai-comments;
+}
+
 .tool-entry {
         display: flex;
         flex-direction: row;

@@ -1,15 +1,16 @@
 #lang racket/base
 
-(require koyo/haml
-         koyo/url
-         koyo/database
-         racket/contract/base
-         web-server/http
-         deta
-         db
-         (prefix-in list: racket/list)
-         "../components/template.rkt"
-         "../components/tool.rkt")
+(require 
+  racket/contract/base
+  koyo/haml
+  koyo/url
+  koyo/database
+  web-server/http
+  deta
+  db
+  (prefix-in list: racket/list)
+  "../components/template.rkt"
+  "../components/tool.rkt")
 
 (provide
  (contract-out
@@ -46,8 +47,8 @@
         (:div ([:class "form-group"])
           (:img [(:class "title-image") (:src (reverse-uri 'tool-img tid))] ) 
 
-          (:label [(:type "myfile")] "Replace image")
-          (:input [(:type "file") (:id "myfile") (:name "myfile") (:accept "image/png, image/jpeg")])
+          (:label [(:for "image")] "Replace image")
+          (:input [(:type "file") (:id "image") (:name "image") (:accept "image/png, image/jpeg")])
 
           )
         
@@ -90,5 +91,4 @@
       (:form ([:id "delete-tool-form"] [:action (reverse-uri 'tool-delete-confirmation tid)] [:method "GET"]))
 
       (:div ([:class "buttons"])
-        (:button [(:class "") (:form "delete-tool-form")] "Delete") (:button [(:class "") (:form "tool-form")] "Save")) 
-    ))))
+        (:button [(:class "") (:form "delete-tool-form")] "Delete") (:button [(:class "") (:form "tool-form")] "Save" ))))))

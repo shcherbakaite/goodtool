@@ -1,14 +1,15 @@
 #lang racket/base
 
-(require koyo/haml
-         koyo/url
-         racket/contract/base
-         web-server/http
-         racket/list
-         db
-         (prefix-in list: racket/list)
-         "../components/template.rkt"
-         "../components/tool.rkt")
+(require 
+  racket/contract/base
+  racket/list
+  koyo/haml
+  koyo/url
+  web-server/http
+  db
+  (prefix-in list: racket/list)
+  "../components/template.rkt"
+  "../components/tool.rkt")
 
 (provide
  (contract-out
@@ -32,8 +33,6 @@
   (if (= mid -1)
     (make-material #:partno (format "~a" (random 9999999)) #:description "A NEW MATERIAL" #:mpn "" #:manufactorer "" )
     (get-material-by-id tm mid)))
-
-
   (page
    (haml
     (.container
@@ -43,8 +42,8 @@
         (:div ([:class "form-group"])
           (:img [(:class "title-image") (:src (reverse-uri 'material-img mid))] ) 
 
-          (:label [(:type "myfile")] "Replace image")
-          (:input [(:type "file") (:id "myfile") (:name "myfile") (:accept "image/png, image/jpeg")])
+          (:label [(:for "image")] "Replace image")
+          (:input [(:type "file") (:id "image") (:name "image") (:accept "image/png, image/jpeg")])
           )
 
         (:div ([:class "form-group"])
@@ -86,5 +85,4 @@
         (:form ([:id "delete-material-form"] [:action (reverse-uri 'material-delete-confirmation mid)] [:method "GET"]))
 
         (:div ([:class "buttons"])
-          (:button [(:class "") (:form "delete-material-form")] "Delete") (:button [(:class "") (:form "material-form")] "Save"))
-      ))))
+          (:button [(:class "") (:form "delete-material-form")] "Delete") (:button [(:class "") (:form "material-form")] "Save"))))))

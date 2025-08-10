@@ -8,6 +8,7 @@
          koyo/url
          racket/format
          web-server/http
+   
          xml
          (prefix-in config: "../config.rkt")
          "auth.rkt")
@@ -16,6 +17,7 @@
  static-uri
  container
  json-response 
+ jpeg-response 
  page)
 
 (define (json-response json)
@@ -29,6 +31,12 @@
        (parameterize ([current-output-port out])
          (write-xml/content (xexpr->xml json)))))
   )
+
+(define (jpeg-response image-bytes)
+  (response/output
+   #:code 200
+   #:mime-type #"image/jpeg;"
+   (lambda (out) (write-bytes image-bytes out))))
 
 (define (static-uri path)
   (define path/full (format "/static/~a?rev=~a" path config:version))

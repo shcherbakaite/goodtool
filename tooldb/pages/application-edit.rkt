@@ -1,30 +1,25 @@
 #lang racket/base
 
-(require koyo/haml
-         koyo/url
-         deta
-         racket/dict
-         koyo/flash
-         racket/hash
-         koyo/database
-         racket/contract/base
-         web-server/http
-         web-server/http/bindings
-         threading
-         "../components/template.rkt"
-         "../components/tool.rkt")
+(require 
+  racket/contract/base
+  racket/dict
+  racket/hash
+  threading
+  koyo/haml
+  koyo/url
+  koyo/flash
+  koyo/database
+  deta
+  web-server/http
+  web-server/http/bindings
+  "../components/template.rkt"
+  "../components/tool.rkt")
 
 (provide
  (contract-out
   [application-edit (-> tool-manager? (-> request? integer? response?))]))
 
-; This function is responsible for serving POST requests to edit APPLICATIONS, APPLICATION TOOLS AND APPLICATION MATERIALS.
-; A new application will be created if appid = -1
-; Existing application will be loaded otherwise
-; Application tool and material entries are updated based on hidden inputs tool-hidden-id\\[([0-9]+)\\].
-; The number between the square brackets is used as id of appliication_tools table.
-; If the id = -1, a new record is created
-; otherwise the record is updated
+; Process POST request to edit APPLICATIONS, APPLICATION TOOLS AND APPLICATION MATERIALS.
 (define ((application-edit tm) _req mid)
   (define bindings (make-hash (request-bindings _req)))
 
@@ -35,8 +30,8 @@
       (if (= mid -1)
         (begin 
           (let ([a (make-application
-                      #:description "..."
-                      #:note "...")])
+                      #:description ""
+                      #:note "")])
             (flash 'success "Created new APPLICATION" )
             (insert-one! conn a)))
       (get-application-by-id tm mid) ))
@@ -60,7 +55,6 @@
 
       ; Only process matching keys AND those entries where hidden input was set
       (when (and bindingid_match (> tool-id-field-value 0))
-        ;(printf "~a = ~s\n" k v)
         ; Parse application_tool.id
         (define atid (string->number (cadr bindingid_match)))
         (define application-tool 
@@ -84,9 +78,7 @@
           (displayln application-tool)
           ; submit update to the database
           (flash 'success (format  "Updated APPLICATION TOOL #~s"  (application_tool-id application-tool )))
-          (update-one! conn application-tool #:force? #t)
-
-    )))
+          (update-one! conn application-tool #:force? #t))))
 
     ; Remove marked tool entries
     ; Update application tool entries from form fields
@@ -105,8 +97,7 @@
         (define atid (string->number (cadr bindingid_match)))
         (define application-tool (get-application-tool-by-id tm atid))
         (flash 'success (format  "Removing TOOL #~s from APPLICATION #~s" atid (application-id application)) )
-        (delete-one! conn application-tool)
-    )))
+        (delete-one! conn application-tool))))
 
     ; Update application tool entries from form fields
     (dict-for-each bindings
@@ -144,9 +135,7 @@
           (displayln application-material)
           ; submit update to the database
           (flash 'success (format  "Updated APPLICATION MATERIAL #~s" (application_material-id application-material  )))
-          (update-one! conn application-material #:force? #t)
-
-    )))
+          (update-one! conn application-material #:force? #t))))
 
     ; Remove marked material entries
     ; Update application tool entries from form fields
@@ -165,8 +154,7 @@
         (define atid (string->number (cadr bindingid_match)))
         (define application-tool (get-application-material-by-id tm atid))
         (flash 'success (format  "Removing MATERIAL #~s from APPLICATION #~s" atid (application-id application)) )
-        (delete-one! conn application-tool)
-    )))
+        (delete-one! conn application-tool))))
 
     (flash 'success "Changes saved")
 

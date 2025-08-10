@@ -1,16 +1,17 @@
 #lang racket/base
 
-(require koyo/haml
-         koyo/url
-         deta
-         koyo/database
-         koyo/flash
-         racket/contract/base
-         web-server/http
-         web-server/http/bindings
-         "../images.rkt"
-         "../components/template.rkt"
-         "../components/tool.rkt")
+(require 
+  racket/contract/base
+  koyo/haml
+  koyo/url
+  koyo/database
+  koyo/flash
+  deta
+  web-server/http
+  web-server/http/bindings
+  "../images.rkt"
+  "../components/template.rkt"
+  "../components/tool.rkt")
 
 (provide
  (contract-out
@@ -37,12 +38,11 @@
     (flash 'success (format  "Updated MATERIAL ~s" (material-id m)))
 
     ; Update tool image
-    (let* [(file-binding (bindings-assq #"myfile" (request-bindings/raw _req)))
+    (let* [(file-binding (bindings-assq #"image" (request-bindings/raw _req)))
            (file-bytes (binding:file-content file-binding))]
       (when (> (bytes-length file-bytes) 0)
         (update-one! conn (set-material-image m (image-square file-bytes))))
       )
 
-    (redirect-to (reverse-uri 'material-info-page (material-id m) )))
-  )
+    (redirect-to (reverse-uri 'material-info-page (material-id m) ))))
   

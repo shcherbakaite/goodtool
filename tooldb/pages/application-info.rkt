@@ -1,20 +1,19 @@
 #lang racket/base
 
-(require koyo/haml
-         koyo/url
-         deta
-         db
-         racket/dict
-         racket/match
-         racket/function
-         koyo/database
-         racket/contract/base
-         web-server/http
-         web-server/http/bindings
-         threading
-         (prefix-in list: racket/list)
-         "../components/template.rkt"
-         "../components/tool.rkt")
+(require 
+  racket/contract/base
+  threading
+  koyo/url
+  koyo/haml
+  koyo/database
+  web-server/http/bindings
+  web-server/http
+  deta
+  db
+  (prefix-in list: racket/list)
+  "../components/template.rkt"
+  "../components/tool.rkt"
+  "../misc.rkt")
 
 (provide
   (contract-out
@@ -24,18 +23,6 @@
  (contract-out
   [application-info (-> tool-manager? (-> request? integer? response?))]))
 
-(define (assoc-ref k lst)
-  (cdr (assoc k lst)))
-
-(define (rows-result->alist rs)
-  (match rs
-    [(rows-result columns rows)
-     (define keys (map (λ (col) (cdr (assoc 'name col))) columns))
-     (map (λ (row)
-            (for/list ([k keys] [v (vector->list row)])
-              (cons k v)))
-          rows)]))
-
 (define (stub-autocomlete-entry form-prefix autocomplete-url placeholder-text image-url initial-description initial-id )
   (let* 
     [(hidden-field-name (format "~a-hidden-id[~s]" form-prefix -1))
@@ -43,7 +30,7 @@
      (item-img-id (format "~a-img-id[~s]" form-prefix -1))]
       (haml
         (:div [(:class "autocomplete-container")]
-          (:img [(:id item-img-id) (:class "thumb-image") (:src image-url)] ) 
+          (:img [(:id item-img-id) (:class "thumb-image stub") (:src image-url)] ) 
           (:input [(:id hidden-field-name ) (:type "hidden") (:name hidden-field-name) (:value (number->string initial-id) ) ])
           (:div ([:class "autocomplete-dropdown-container"])
             (:input [
@@ -55,24 +42,7 @@
               (:autocomplete-hidden-field-id hidden-field-name) 
               (:autocomplete-url autocomplete-url ) 
               (:value initial-description )
-              (:previous-value initial-description )])
-          )
-        )
-  )))
-
-(define (safe-car lst)
-  (if (pair? lst)
-      (car lst)
-      #f))
-
-(define filter-false
-  (~> (lambda (xs) (filter identity xs))))
-
-(define (jpeg-response image-bytes)
-  (response/output
-   #:code 200
-   #:mime-type #"image/jpeg;"
-   (lambda (out) (write-bytes image-bytes out))))
+              (:previous-value initial-description )]))))))
 
 (define ((application-img-first-material tm) _req aid)
   (define a (get-application-by-id tm aid))
@@ -122,18 +92,12 @@
       (redirect-to (static-uri "img/tool-default.jpg"))
       (jpeg-response (car images))))
 
-
- ; (redirect-to (static-uri "img/material-default.jpg")))
 (define ((application-info tm) _req aid)
   (define bindings (make-hash (request-bindings _req)))
-
   (define a 
     (if (= aid -1)
       (make-application #:description "NEW APPLICATION" #:note "")
       (get-application-by-id tm aid)))
-
-  ;(printf "~a\n" (rows-result->alist (query-application-tools tm aid)))
-  (printf "~a\n" a)
   (page
    (haml
     (.container
@@ -162,7 +126,6 @@
 
           (haml
             (:div [(:class "autocomplete-container")]
-              ; (:div (format "~s" i))
               (:img [(:id image-name) (:class "thumb-image") (:src (reverse-uri 'tool-img (assoc-ref "id" t)))]) 
               (:input [(:id hidden-field-name ) (:type "hidden") (:name hidden-field-name) (:value (number->string (assoc-ref "id" t))) ])
               
@@ -176,15 +139,9 @@
                   (:value original-value ) 
                   (:previous-value original-value ) ])
               )
-
               (:a [(:target "_blank") (:href (reverse-uri 'tool-info-page (assoc-ref "id" t)))] "View")
-
-              ;(:div [(:class "checkbox-group")]
                 (:input [(:type "checkbox")  (:id remove-checkbox-name) (:name remove-checkbox-name)] )
-                (:label [(:for remove-checkbox-name)] "Remove");)
-            )
-          )
-          )
+                (:label [(:for remove-checkbox-name)] "Remove"))))
 
         (let* [
           (initial-tool-id (string->number (hash-ref bindings `toolid "0")))
@@ -199,7 +156,6 @@
                initial-tool-id ))
 
         (:h2 "Materials")
-
         ,@(for/list ([m (rows-result->alist (query-application-materials tm aid))])
           (displayln a)
           (define hidden-field-name (format "material-hidden-id[~s]" (assoc-ref "materialentryid" m)))
@@ -210,7 +166,6 @@
 
           (haml
             (:div [(:class "autocomplete-container")]
-              ; (:div (format "~s" i))
               (:img [(:id image-name) (:class "thumb-image") (:src (reverse-uri 'material-img (assoc-ref "id" m)))]) 
               (:input [(:id hidden-field-name ) (:type "hidden") (:name hidden-field-name) (:value (number->string (assoc-ref "id" m))) ])
               
@@ -226,13 +181,8 @@
               )
 
               (:a [(:target "_blank") (:href (reverse-uri 'material-info-page (assoc-ref "id" m)))] "View")
-
-              ;(:div [(:class "checkbox-group")]
                 (:input [(:type "checkbox")  (:id remove-checkbox-name) (:name remove-checkbox-name)] )
-                (:label [(:for remove-checkbox-name)] "Remove");)
-            )
-          )
-        )
+                (:label [(:for remove-checkbox-name)] "Remove"))))
 
         (let* [
           (initial-material-id (string->number (hash-ref bindings `materialid "0")))
@@ -244,15 +194,8 @@
                "New material entry"
                (static-uri "img/material-default.jpg")
                initial-material-desc 
-               initial-material-id ))
-
-
-        )
+               initial-material-id )))
 
         (:form ([:id "delete-application-form"] [:action (reverse-uri 'application-delete-confirmation aid)] [:method "GET"]))
-
         (:div ([:class "buttons"])
-        (:button [(:class "") (:form "delete-application-form")] "Delete") (:button [(:class "") (:form "application-form")] "Save")) 
-
-
-      ) )))
+          (:button [(:class "") (:form "delete-application-form")] "Delete") (:button [(:class "") (:form "application-form")] "Save"))))))

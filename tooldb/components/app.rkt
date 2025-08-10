@@ -1,7 +1,6 @@
 #lang racket/base
 
 (require koyo
-         ;deta
          koyo/database/migrator
          racket/contract/base
          racket/contract/region
@@ -40,29 +39,20 @@
       ; #:roles (user)
       (tools-page tools)]
 
-      ; TOOLS PAGE
+      ; TOOL LIST PAGE
 
       [("tools")
         (tools-page tools)]
 
-      ; [("tool-list" (string-arg))
-      ;   (tool-list-fragment tools)]
+      [("tools-search" (string-arg))
+        #:method "get"
+        (tools-search-results tools)]
 
-      ; ; TOOL VIEW PAGE 
-
-      [("tool-delete-confirmation" (integer-arg))
-        (tool-delete-confirmation tools)]
-
-      [("tool-delete-action" (integer-arg))
-        #:method "post"
-        (tool-delete-action tools)]
+      ; TOOL INFO PAGE
 
       [("tool-info" (integer-arg))
         (tool-info-page tools)]
-
-      [("tool-image" (integer-arg))
-        (tool-img tools)]
-
+      
       [("tool-edit" (integer-arg))
         #:method "post"
         (tool-edit tools)]
@@ -71,24 +61,36 @@
         #:method "get"
         (tool-autocomplete tools)]
 
-      [("tools-search" (string-arg))
-        #:method "get"
-        (tools-search-results tools)]
+      [("tool-image" (integer-arg))
+        (tool-img tools)]
 
-      ; ; MATERIALS PAGE
+      [("tool-delete-confirmation" (integer-arg))
+        (tool-delete-confirmation tools)]
+
+      [("tool-delete-action" (integer-arg))
+        #:method "post"
+        (tool-delete-action tools)]
+
+      ; MATERIAL LIST PAGE
 
       [("materials")
         (materials-page tools)]
 
-      [("material-info" (integer-arg))
-        (material-info-page tools)]
-
-      [("material-image" (integer-arg))
-        (material-img tools)]
-
       [("materials-search" (string-arg))
         #:method "get"
         (materials-search-results tools)]
+
+      ; MATERIALS INFO PAGE
+
+      [("material-info" (integer-arg))
+        (material-info-page tools)]
+
+      [("material-edit" (integer-arg))
+        #:method "post"
+        (material-edit tools)]
+
+      [("material-image" (integer-arg))
+        (material-img tools)]
 
       [("material-delete-confirmation" (integer-arg))
         (material-delete-confirmation tools)]
@@ -97,31 +99,11 @@
         #:method "post"
         (material-delete-action tools)]
 
-      ; [("materials-list" (string-arg))
-      ;   (materials-list-fragment tools)]
-
-      ; ; MATERIAL VIEW PAGE 
-
-      ; [("material-info" (integer-arg))
-      ;   (tool-info-page tools)]
-
-      [("material-edit" (integer-arg))
-        #:method "post"
-        (material-edit tools)]
-
       [("material-autocomplete" (string-arg))
         #:method "get"
         (material-autocomplete tools)]
 
       ; APPLICATIONS PAGE
-
-      ; [("applications")
-      ;   (applications-page tools)]
-
-      ; [("applications-list" (string-arg))
-      ;   (applications-list-fragment tools)]
-
-      ; APPLICATION VIEW PAGE
 
       [("application-info" (integer-arg))
         (application-info tools)]
