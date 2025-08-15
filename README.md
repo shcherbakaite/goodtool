@@ -1,4 +1,4 @@
-# tooldb
+# goodtool (or tooldb)
 
 ## Setup
 
