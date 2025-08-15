@@ -50,5 +50,5 @@ This application requires running Postgres database server on `127.0.0.1` on por
 `postgres://tooldb:tooldb@127.0.0.1:5432/tooldb`
 
 ## Docker
-- `docker_build.sh` - Use this to build docker container named `tooldb`
+- `docker_build.sh` - Use this to build docker container named `goodtool`
 - `docker_run.sh` - Use this to lauch docker container after it's built, this will also start the server inside the container.
