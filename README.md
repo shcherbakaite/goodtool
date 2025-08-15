@@ -42,3 +42,7 @@ local development. You can disable this requirement by setting the
 [Node.js]: https://nodejs.org/en/
 [argon2]: https://www.argon2.com/
 [chief]: https://github.com/Bogdanp/racket-chief
+
+### Database
+This application requires running Postgres database server on 127.0.0.1 on port 5432, with database tooldb, accessible by user tooldb with password tooldb. Or in other words you should be able to connect to it using following URL:
+`postgres://tooldb:tooldb@127.0.0.1:5432/tooldb`
