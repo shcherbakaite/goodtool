@@ -46,3 +46,7 @@ local development. You can disable this requirement by setting the
 ## Database
 This application requires running Postgres database server on `127.0.0.1` on port `5432`, with database `tooldb`, accessible by user `tooldb` with password `tooldb`. Or in other words you should be able to connect to it using following URL:
 `postgres://tooldb:tooldb@127.0.0.1:5432/tooldb`
+
+## Docker
+- `docker_build.sh` - Use this to build docker container named `tooldb`
+- `docker_run.sh` - Use this to lauch docker container after it's built, this will also start the server inside the container.
