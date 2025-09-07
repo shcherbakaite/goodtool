@@ -8,6 +8,8 @@
   web-server/http
   db
   (prefix-in list: racket/list)
+  "../misc.rkt"
+  "../images.rkt"
   "../components/template.rkt"
   "../components/tool.rkt")
 
@@ -15,18 +17,24 @@
  (contract-out
   [material-img (-> tool-manager? (-> request? integer? response?))])
  (contract-out
+  [material-img-thumb (-> tool-manager? (-> request? integer? response?))])
+ (contract-out
   [material-info-page (-> tool-manager? (-> request? integer? response?))]) )
 
 ; Serve tool image r redirect to default image
 (define ((material-img tm) _req mid)
   (let ([m (get-material-by-id tm mid)])
     (if (and m (sql-null->false (material-image m)))
-      (begin 
-        (response/output
-         #:code 200
-         #:mime-type #"image/jpeg;"
-         (lambda (out) (write-bytes (material-image m) out))))
-      (redirect-to (static-uri "img/material-default.jpg")))))
+      (jpeg-response (image-scale-to-width (material-image m) 400 ))
+      (redirect-to (static-uri "img/tool-default.jpg")))))
+
+; Serve tool image r redirect to default image
+(define ((material-img-thumb tm) _req mid)
+  (let ([m (get-material-by-id tm mid)])
+    (if (and m (sql-null->false (material-image m)))
+      (jpeg-response (image-scale-to-width (material-image m) 150 ))
+      (redirect-to (static-uri "img/tool-default.jpg")))))
+
 
 (define ((material-info-page tm) _req mid)
   (define m 

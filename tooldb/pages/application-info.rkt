@@ -11,6 +11,7 @@
   deta
   db
   (prefix-in list: racket/list)
+  "../images.rkt"
   "../components/template.rkt"
   "../components/tool.rkt"
   "../misc.rkt")
@@ -55,13 +56,17 @@
         (~>
           materials
           safe-car
-          ((lambda (t) (and t (material-image t))))
+          ((lambda (m) (and m (material-image m))))
+          sql-null->false
+          ((lambda (img) (and img (image-scale-to-width img 150 ))))
           sql-null->false) 
         (~>
           tools
           safe-car
-          ((lambda (t) (and t (tool-image t))))
-          sql-null->false) 
+          ((lambda (m) (and m (tool-image m))))
+          sql-null->false
+          ((lambda (img) (and img (image-scale-to-width img 150 ))))
+          ) 
         ))
     )
     (if (list:empty? images)
@@ -80,12 +85,15 @@
           tools
           safe-car
           ((lambda (t) (and t (tool-image t))))
-          sql-null->false) 
+          sql-null->false
+          ((lambda (img) (and img (image-scale-to-width img 150 ))))) 
         (~>
           materials
           safe-car
           ((lambda (t) (and t (material-image t))))
-          sql-null->false) 
+          sql-null->false
+          ((lambda (img) (and img (image-scale-to-width img 150 ))))
+          ) 
         ))
     )
     (if (list:empty? images)

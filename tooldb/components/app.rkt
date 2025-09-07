@@ -64,6 +64,9 @@
       [("tool-image" (integer-arg))
         (tool-img tools)]
 
+      [("tool-image-thumb" (integer-arg))
+        (tool-img-thumb tools)]
+
       [("tool-delete-confirmation" (integer-arg))
         (tool-delete-confirmation tools)]
 
@@ -91,6 +94,9 @@
 
       [("material-image" (integer-arg))
         (material-img tools)]
+
+      [("material-image-thumb" (integer-arg))
+        (material-img-thumb tools)]
 
       [("material-delete-confirmation" (integer-arg))
         (material-delete-confirmation tools)]

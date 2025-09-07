@@ -22,5 +22,5 @@
        ,@(for/list ([m (materials-list-all tools)])
         (haml
           (:div [(:class "tool-entry")]
-            (:img [(:class "thumb-image") (:src (reverse-uri 'material-img (material-id m)))] )
+            (:img [(:class "thumb-image") (:src (reverse-uri 'material-img-thumb (material-id m)))] )
             (:a [(:href (reverse-uri 'material-info-page (material-id m)))] (material->string m) )))))))))

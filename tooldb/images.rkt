@@ -4,9 +4,13 @@
   racket/contract/base
   racket/class
   racket/match
+  racket/math
   racket/draw)
 
 (provide 
+  bitmap-scale
+  image-scale-to-width
+  bitmap-scale-to-width
   (contract-out [image-square (-> bytes? bytes?)]))
 
 (define (argb-bytes-to-colors bs)
@@ -72,9 +76,69 @@
 
   color-avg)
 
+; (define (image-resize image-bytes)
+;   ; Read bitmap from bytes
+;   (define bm (read-bitmap (open-input-bytes image-bytes)))
+
+;   ; New bitmap of size side x side
+;   (define result (make-bitmap 200 200))
+;   ; DC (Drawing Context)
+;   (define dc (new bitmap-dc% [bitmap result]))
+
+;   (send dc draw-bitmap bm x y)
+
+;   ; Return image bytes (jpeg)
+;   (define out (open-output-bytes))
+;   (send result save-file out 'jpeg)
+;   (get-output-bytes out))
+
+(define bitmap-blank
+  (lambda [[w 0] [h #false] #:backing-scale [backing-scale 2.0]]
+    (define width  (max 1 (exact-ceiling w)))
+    (define height (max 1 (exact-ceiling (or h w))))
+    (make-bitmap width height #:backing-scale backing-scale)))
+
+(define bitmap-scale
+  (case-lambda
+    [(bmp scale)
+     (if (= scale 1.0) bmp (bitmap-scale bmp scale scale))]
+    [(bmp scale-x scale-y)
+     (cond [(and (= scale-x 1.0) (= scale-y 1.0)) bmp]
+           [else (let ([w (max 1 (exact-ceiling (* (send bmp get-width) scale-x)))]
+                       [h (max 1 (exact-ceiling (* (send bmp get-height) scale-y)))])
+                   (define dc (make-object bitmap-dc% (bitmap-blank w h)))
+                   (send dc set-smoothing 'aligned)
+                   (send dc set-scale scale-x scale-y)
+                   (send dc draw-bitmap bmp 0 0)
+                   (or (send dc get-bitmap) (bitmap-blank)))])]))
+
+
+; Scale bitmap (proportionally) to have specified width
+(define (bitmap-scale-to-width bmp width)
+  ; Read bitmap from bytes
+  (define w (send bmp get-width))
+  (define h (send bmp get-height))
+
+  (define scale (/ width w))
+  (bitmap-scale bmp scale))
+
+
+(define (image-scale-to-width image-bytes width)
+  ; Read bitmap from bytes
+  (define result (bitmap-scale-to-width 
+    (read-bitmap (open-input-bytes image-bytes))
+    width))
+
+  ; Return image bytes (jpeg)
+  (define out (open-output-bytes))
+  (send result save-file out 'jpeg)
+  (get-output-bytes out))
+
 (define (image-square image-bytes)
   ; Read bitmap from bytes
-  (define bm (read-bitmap (open-input-bytes image-bytes)))
+  (define bm (bitmap-scale-to-width 
+    (read-bitmap (open-input-bytes image-bytes))
+    800))
   
   (define w (send bm get-width))
   (define h (send bm get-height))

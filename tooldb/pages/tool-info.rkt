@@ -9,6 +9,8 @@
   deta
   db
   (prefix-in list: racket/list)
+  "../misc.rkt"
+  "../images.rkt"
   "../components/template.rkt"
   "../components/tool.rkt")
 
@@ -16,19 +18,26 @@
  (contract-out
   [tool-info-page (-> tool-manager? (-> request? integer? response?))])
  (contract-out
-  [tool-img (-> tool-manager? (-> request? integer? response?))]))
+  [tool-img (-> tool-manager? (-> request? integer? response?))])
+ (contract-out
+  [tool-img-thumb (-> tool-manager? (-> request? integer? response?))]))
 
-(define (jpeg-response image-bytes)
-  (response/output
-   #:code 200
-   #:mime-type #"image/jpeg;"
-   (lambda (out) (write-bytes image-bytes out))))
+
 
 ; Serve tool image r redirect to default image
 (define ((tool-img tm) _req tid)
   (let ([t (get-tool-by-id tm tid)])
     (if (and t (sql-null->false (tool-image t)))
-      (jpeg-response (tool-image t))
+      ; scale image before sending it out
+      (jpeg-bytes-response (image-scale-to-width (tool-image t) 400 ))
+      (redirect-to (static-uri "img/tool-default.jpg")))))
+
+; Serve tool image r redirect to default image
+(define ((tool-img-thumb tm) _req tid)
+  (let ([t (get-tool-by-id tm tid)])
+    (if (and t (sql-null->false (tool-image t)))
+      ; scale image before sending it out
+      (jpeg-bytes-response (image-scale-to-width (tool-image t) 150 ))
       (redirect-to (static-uri "img/tool-default.jpg")))))
 
 (define ((tool-info-page tm) _req tid)
