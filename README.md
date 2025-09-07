@@ -1,4 +1,6 @@
-# tooldb
+# goodtool (or tooldb)
+
+Tool tracking(electrical crimpers) application based on [racket/koyo](https://docs.racket-lang.org/koyo/index.html) framework. Styled after Monokai theme colors.
 
 ## Setup
 
@@ -42,3 +44,11 @@ local development. You can disable this requirement by setting the
 [Node.js]: https://nodejs.org/en/
 [argon2]: https://www.argon2.com/
 [chief]: https://github.com/Bogdanp/racket-chief
+
+## Database
+This application requires running Postgres database server on `127.0.0.1` on port `5432`, with database `tooldb`, accessible by user `tooldb` with password `tooldb`. Or in other words you should be able to connect to it using following URL:
+`postgres://tooldb:tooldb@127.0.0.1:5432/tooldb`
+
+## Docker
+- `docker_build.sh` - Use this to build docker container named `goodtool`
+- `docker_run.sh` - Use this to lauch docker container after it's built, this will also start the server inside the container.
