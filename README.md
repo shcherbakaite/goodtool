@@ -2,6 +2,8 @@
 
 Tool tracking(electrical crimpers) application based on [racket/koyo](https://docs.racket-lang.org/koyo/index.html) framework. Styled after Monokai theme colors.
 
+![Screnshot](goodtool.JPG)
+
 ## Setup
 
 ### Requirements
