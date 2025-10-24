@@ -50,19 +50,19 @@ local development. You can disable this requirement by setting the
 ## Database
 This application requires running Postgres database server on `127.0.0.1` on port `5432`, with database `tooldb`, accessible by user `tooldb` with password `tooldb`. Or in other words you should be able to connect to it using following URL:
 `postgres://tooldb:tooldb@127.0.0.1:5432/tooldb`
-
+`
 sudo -u postgres psql
 ALTER SYSTEM SET password_encryption = 'md5';
 SELECT pg_reload_conf();
 CREATE USER tooldb WITH PASSWORD 'tooldb';
 CREATE DATABASE tooldb OWNER tooldb;
 GRANT ALL PRIVILEGES ON DATABASE tooldb TO tooldb;
-\q
+\q`
 
 
-sudo nano /etc/postgresql/*/main/pg_hba.conf
+`sudo nano /etc/postgresql/*/main/pg_hba.conf`
 Change from scram-sha-256 or whatever latest thing in fashion to something that actually works:
-host    all             all             127.0.0.1/32            md5
+`host    all             all             127.0.0.1/32            md5`
 
 sudo systemctl restart postgresql
 
